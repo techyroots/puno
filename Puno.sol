@@ -1,14 +1,10 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
-
 
 import "./ERC20.sol";
 import "./Ownable.sol";
 
-
-contract Puno is ERC20, Ownable{
-    
+contract Puno is ERC20, Ownable{  
     uint256  _totalSupply        = 5100000 * 10 ** 18;
     uint256  _rewardPercent      = 250000 * 10 ** 18;
     uint256  _holdPercent        = 2799000 * 10 ** 18;
@@ -44,6 +40,5 @@ contract Puno is ERC20, Ownable{
     
     function setHoldWallet(address account) public onlyOwner {
         holdWallet = account;
-    }
-    
+    }  
 }
