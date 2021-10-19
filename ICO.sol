@@ -29,10 +29,6 @@ contract ICO is Ownable, Pausable {
     // the number of ETH raised through this contract
     uint256 private weiRaised = 0;
     
-    // signup reward
-    uint256 private signupRewards = 1000000000000000000;
-    
-    
     struct Invest{
         bool    isExist;
         uint256 totalBuy;
@@ -117,10 +113,6 @@ contract ICO is Ownable, Pausable {
 
         // Emit an event that shows invested successfully
         emit Invested(receiver, msg.value, tokensAmount);
-        
-        
-        // Transfer Token to owner's address
-        // token.transfer(receiver, tokensAmount);
 
         // Transfer Fund to owner's address
         payable(owner()).transfer(address(this).balance);
@@ -167,22 +159,17 @@ contract ICO is Ownable, Pausable {
         return endsAt;
     }
     
-    function signupReward(address referral) public {
+    function signup(address referral) public {
        require(referral != msg.sender, "INVALID :("); // User address and Referral must be different
        require(!user[msg.sender].isExist, "You already a member");
        Referral memory referralInfo;
        referralInfo = Referral({
             isExist: true,
             referral: referral,
-            reward  : signupRewards
+            reward  : 0
         });
         user[msg.sender] = referralInfo;
-        // token.transfer(msg.sender, signupRewards);
-        // token.transfer(referral , signupRewards);
-        user[referral].reward += signupRewards;
     }
-    
-   
     
     function getRewardDetails(address account) public view returns (address, uint256){
         return (user[account].referral, user[account].reward);
