@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
-
 
 import "./BEP20.sol";
 import "./Ownable.sol";
-
 
 contract Puno is BEP20, Ownable{
     
