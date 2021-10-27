@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+
 import "./IBEP20.sol";
 import "./Ownable.sol";
 import "./SafeMath.sol";
@@ -179,17 +180,13 @@ contract ICO is Ownable, Pausable {
         return endsAt;
     }
     
+    function getRefPause() public view returns (bool){
+        return refpaused;
+    }
+    
     function getInvestDetails(address account, uint256 index) public view returns(bool, uint256, uint256, uint256, uint256, uint256){
         Invest memory investInf = investDetails[account][index];  
         return (investInf.isExist, investInf.totalBuy, investInf.tokenAmount, investInf.investAmount, investInf.buyTime, investInf.lockTime);
-    }
-    
-    function getStartTime() public view returns (uint256){
-        return startsAt;
-    }
-    
-    function getEndTime() public view returns (uint256){
-        return endsAt;
     }
     
     function getSoldTokens() public view returns (uint256) {
