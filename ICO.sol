@@ -25,9 +25,6 @@ contract ICO is Ownable, Pausable {
 
     // the number of tokens already sold through this contract
     uint256 private tokensSold = 0;
-
-    // the number of ETH raised through this contract
-    uint256 private weiRaised = 0;
     
     // referral paused
     bool private refpaused = false;
@@ -140,7 +137,6 @@ contract ICO is Ownable, Pausable {
         investDetails[msg.sender][investedAmount[msg.sender].totalBuy] = investedAmount[msg.sender];
         // Update totals
         tokensSold += tokensAmount;
-        weiRaised += msg.value;
 
         // Emit an event that shows invested successfully
         emit Invested(msg.sender, msg.value, tokensAmount);
