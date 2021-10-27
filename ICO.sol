@@ -35,9 +35,6 @@ contract ICO is Ownable, Pausable {
     // minimum withdraw amount
     uint256 private minWithdraw = 10000000000000000000;
     
-    // signup reward
-    uint256 private signupReward = 1000000000000000000;
-    
     // invest struct
     struct Invest{
         bool    isExist;
@@ -48,16 +45,7 @@ contract ICO is Ownable, Pausable {
         uint256 lockTime;
     }
     
-    // Referral System
-    struct User{
-        address referer;
-        address[] referrals;
-        uint256 reward;
-        uint256 downline;
-        uint256 withdrawAmount;
-    }
-    
-    mapping(address => User) private user;
+    mapping(address => uint256) private withdraw;
 
     // How much BNB each address has invested to this crowdsale
     mapping (address => Invest) private investedAmount;
@@ -115,31 +103,27 @@ contract ICO is Ownable, Pausable {
         TokenPerBNB = value;
     }
 
-    function investInternal(address receiver) private { 
+    function invest(address referral) public payable { 
         uint256 amount;
         require(!paused(), "Sale is paused");
         require(startsAt <= block.timestamp && endsAt > block.timestamp);
+        require(referral != msg.sender, "Invalid");
         uint256 tokensAmount = (msg.value).div(TokenPerBNB).mul(10 ** 18);
         if(!refpaused){
-            if(user[receiver].referer!= address(0)){
-                uint256 referralreward = tokensAmount.mul(10).div(100);   // 10% of tokensAmount goes to referral.
-                user[user[receiver].referer].reward += referralreward;  
-                token.transfer(user[receiver].referer , referralreward);
-                amount = tokensAmount.sub(referralreward); 
-            }else{
-                amount = tokensAmount;
-            }
+            uint256 referralpercent = tokensAmount.mul(10).div(100);   // 10% of tokensAmount goes to referral.
+            token.transfer(referral, referralpercent);
+            amount = tokensAmount.sub(referralpercent); 
         }
         else{
             amount = tokensAmount;
         }
         
-        if(investedAmount[receiver].isExist){
-            investedAmount[receiver].totalBuy++;
-            investedAmount[receiver].investAmount = msg.value;
-            investedAmount[receiver].tokenAmount = amount;
-            investedAmount[receiver].buyTime = block.timestamp;
-            investedAmount[receiver].lockTime = block.timestamp + 182 days;
+        if(investedAmount[msg.sender].isExist){
+            investedAmount[msg.sender].totalBuy++;
+            investedAmount[msg.sender].investAmount = msg.value;
+            investedAmount[msg.sender].tokenAmount = amount;
+            investedAmount[msg.sender].buyTime = block.timestamp;
+            investedAmount[msg.sender].lockTime = block.timestamp + 182 days;
            
         }else{
             Invest memory investInfo;
@@ -151,22 +135,18 @@ contract ICO is Ownable, Pausable {
                 buyTime      : block.timestamp,
                 lockTime     : block.timestamp + 182 days
             });
-            investedAmount[receiver] = investInfo;
+            investedAmount[msg.sender] = investInfo;
         }
-        investDetails[receiver][investedAmount[receiver].totalBuy] = investedAmount[receiver];
+        investDetails[msg.sender][investedAmount[msg.sender].totalBuy] = investedAmount[msg.sender];
         // Update totals
         tokensSold += tokensAmount;
         weiRaised += msg.value;
 
         // Emit an event that shows invested successfully
-        emit Invested(receiver, msg.value, tokensAmount);
+        emit Invested(msg.sender, msg.value, tokensAmount);
 
         // Transfer Fund to owner's address
         payable(owner()).transfer(address(this).balance);
-    }
-
-    function invest() public payable {
-        investInternal(msg.sender);
     }
 
     function withdrawTokens(uint256 amount) onlyOwner public {
@@ -174,19 +154,7 @@ contract ICO is Ownable, Pausable {
         token.transfer(owner(), amount);
     } 
     
-    function userRef(address referral) public {
-        require(referral != msg.sender, "INVALID :("); // User address and Referral must be different
-        user[referral].referrals.push(msg.sender);
-        user[referral].downline++;
-        user[msg.sender].referer = referral;
-        user[msg.sender].withdrawAmount = 0;
-        user[msg.sender].reward = signupReward;
-        user[referral].reward += signupReward;
-        token.transfer(msg.sender, signupReward);
-        token.transfer(referral, signupReward);
-    }
-    
-    function withdraw(uint256 amount) public {
+    function withdrawal(uint256 amount) public {
         uint256 releaseAmount = 0;
         require(amount > minWithdraw, "Minimum Withdrawal amount not met");
         for(uint i = 1 ; i <= investedAmount[msg.sender].totalBuy ; i++){
@@ -195,9 +163,9 @@ contract ICO is Ownable, Pausable {
               releaseAmount += (investDetails[msg.sender][i].tokenAmount).div(5).mul(lockTime);
             }
         }
-        require(releaseAmount - user[msg.sender].withdrawAmount > amount, "Not Enough Amount");
+        require(releaseAmount - withdraw[msg.sender] > amount, "Not Enough Amount");
         token.transfer(msg.sender, amount);
-        user[msg.sender].withdrawAmount += amount;
+        withdraw[msg.sender] += amount;
         emit Withdraw(amount, msg.sender, block.timestamp);
     }
     
@@ -217,10 +185,6 @@ contract ICO is Ownable, Pausable {
         return endsAt;
     }
     
-    function getDownline(address account) public view returns (address[] memory){
-        return (user[account].referrals);
-    }
-    
     function getInvestDetails(address account, uint256 index) public view returns(bool, uint256, uint256, uint256, uint256, uint256){
         Invest memory investInf = investDetails[account][index];  
         return (investInf.isExist, investInf.totalBuy, investInf.tokenAmount, investInf.investAmount, investInf.buyTime, investInf.lockTime);
@@ -237,11 +201,4 @@ contract ICO is Ownable, Pausable {
     function getSoldTokens() public view returns (uint256) {
         return tokensSold;
     }
-    
-    function getUser(address account) public view returns (address, uint256, uint256, uint256){
-        User memory userInf = user[account];
-        return (userInf.referer, userInf.reward, userInf.downline, userInf.withdrawAmount);
-    }
-    
-    
 }
