@@ -145,13 +145,13 @@ contract ICO is Ownable, Pausable {
     }
 
     function withdrawTokens(uint256 amount) public onlyOwner{
-        require(token.balanceOf(address(this)) > amount , "Not enough tokens");
+        require(token.balanceOf(address(this)) > amount , "Not Enough Tokens");
         token.transfer(owner(), amount);
     } 
     
     function withdrawal(uint256 amount) public {
         uint256 releaseAmount = 0;
-        require(amount > minWithdraw, "Minimum Withdrawal amount not met");
+        require(amount > minWithdraw, "Minimum Withdrawal Amount Not Met");
         for(uint i = 1 ; i <= investedAmount[msg.sender].totalBuy ; i++){
             if(block.timestamp > investDetails[msg.sender][i].lockTime){
               uint256 lockTime = (block.timestamp - investDetails[msg.sender][i].lockTime).div(30 days);
