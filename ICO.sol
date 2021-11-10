@@ -83,17 +83,17 @@ contract ICO is Ownable, Pausable {
         refPaused = true;
     }
     
-    function setStartsAt(uint256 time) onlyOwner public {
+    function setStartsAt(uint256 time) public onlyOwner{
         startsAt = time;
         emit StartsAtChanged(startsAt);
     }
     
-    function setEndsAt(uint256 time) onlyOwner public {
+    function setEndsAt(uint256 time) public onlyOwner {
         endsAt = time;
         emit EndsAtChanged(endsAt);
     }
     
-    function setRate(uint256 value) onlyOwner public {
+    function setRate(uint256 value) public onlyOwner{
         require(value > 0);
         emit RateChanged(tokenPerBNB, value);
         tokenPerBNB = value;
@@ -144,7 +144,7 @@ contract ICO is Ownable, Pausable {
         payable(owner()).transfer(address(this).balance);
     }
 
-    function withdrawTokens(uint256 amount) onlyOwner public {
+    function withdrawTokens(uint256 amount) public onlyOwner{
         require(token.balanceOf(address(this)) > amount , "Not enough tokens");
         token.transfer(owner(), amount);
     } 
