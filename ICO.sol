@@ -105,7 +105,7 @@ contract ICO is Ownable, Pausable {
         require(startsAt <= block.timestamp && endsAt > block.timestamp);
         require(referral != msg.sender, "Invalid");
         uint256 tokensAmount = (msg.value).div(TokenPerBNB).mul(10 ** 18);
-        if(!refpaused){
+        if(!refpaused && referral != address(0){
             uint256 referralpercent = tokensAmount.mul(10).div(100);   // 10% of tokensAmount goes to referral.
             token.transfer(referral, referralpercent);
             amount = tokensAmount.sub(referralpercent); 
