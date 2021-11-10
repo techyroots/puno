@@ -20,13 +20,13 @@ contract ICO is Ownable, Pausable {
     uint256 private endsAt;
 
     // the price of token
-    uint256 private TokenPerBNB;
+    uint256 private tokenPerBNB;
 
     // the number of tokens already sold through this contract
     uint256 private tokensSold = 0;
     
     // referral paused
-    bool private refpaused = false;
+    bool private refPaused = false;
     
     // minimum withdraw amount
     uint256 private minWithdraw = 10000000000000000000;
@@ -76,11 +76,11 @@ contract ICO is Ownable, Pausable {
     } 
     
     function setReferralPaused() public onlyOwner{
-        refpaused = false;
+        refPaused = false;
     }
     
     function setReferralUnpaused() public onlyOwner{
-        refpaused = true;
+        refPaused = true;
     }
     
     function setStartsAt(uint256 time) onlyOwner public {
@@ -95,8 +95,8 @@ contract ICO is Ownable, Pausable {
     
     function setRate(uint256 value) onlyOwner public {
         require(value > 0);
-        emit RateChanged(TokenPerBNB, value);
-        TokenPerBNB = value;
+        emit RateChanged(tokenPerBNB, value);
+        tokenPerBNB = value;
     }
 
     function invest(address referral) public payable { 
@@ -104,10 +104,10 @@ contract ICO is Ownable, Pausable {
         require(!paused(), "Sale is paused");
         require(startsAt <= block.timestamp && endsAt > block.timestamp);
         require(referral != msg.sender, "Invalid");
-        uint256 tokensAmount = (msg.value).div(TokenPerBNB).mul(10 ** 18);
-        if(!refpaused && referral != address(0)){
+        uint256 tokensAmount = (msg.value).div(tokenPerBNB).mul(10 ** 18);
+        if(!refPaused && referral != address(0)){
             uint256 referralpercent = tokensAmount.mul(10).div(100);   // 10% of tokensAmount goes to referral.
-            token.transfer(referral, referralpercent);
+            // token.transfer(referral, referralpercent);
             amount = tokensAmount.sub(referralpercent); 
         }
         else{
@@ -165,7 +165,7 @@ contract ICO is Ownable, Pausable {
     }
     
     function price() public view returns (uint256){
-        return TokenPerBNB;
+        return tokenPerBNB;
     }
     
     function getToken() public view returns (IBEP20){
@@ -181,7 +181,7 @@ contract ICO is Ownable, Pausable {
     }
     
     function getRefPause() public view returns (bool){
-        return refpaused;
+        return refPaused;
     }
     
     function getInvestDetails(address account, uint256 index) public view returns(bool, uint256, uint256, uint256, uint256, uint256){
