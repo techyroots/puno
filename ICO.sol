@@ -31,6 +31,8 @@ contract ICO is Ownable, Pausable {
     // minimum withdraw amount
     uint256 private minWithdraw = 10000000000000000000;
     
+    uint256 private lockTime  = 182 days;
+    
     // invest struct
     struct Invest{
         bool    isExist;
@@ -38,7 +40,6 @@ contract ICO is Ownable, Pausable {
         uint256 investAmount;
         uint256 tokenAmount;
         uint256 buyTime;
-        uint256 lockTime;
     }
     
     mapping(address => uint256) private withdraw;
@@ -49,13 +50,16 @@ contract ICO is Ownable, Pausable {
     mapping (address => mapping (uint => Invest)) private investDetails;
     
     // A new investment was made
-    event Invested(address investor, uint256 weiAmount, uint256 tokenAmount);
+    event Invested(address indexed investor, uint256 investAmount, uint256 tokenAmount);
     
     // Crowdsale Start time has been changed
     event StartsAtChanged(uint256 startsAt);
     
     // Crowdsale end time has been changed
     event EndsAtChanged(uint256 endsAt);
+    
+    // Lock time has been changed
+    event LockTimeChanged(uint256 lockTime);
     
     // Calculated new price
     event RateChanged(uint256 oldValue, uint256 newValue);
@@ -95,56 +99,47 @@ contract ICO is Ownable, Pausable {
     
     function setRate(uint256 value) public onlyOwner{
         require(value > 0);
-        emit RateChanged(tokenPerBNB, value);
         tokenPerBNB = value;
+        emit RateChanged(tokenPerBNB, value);
+    }
+    
+    function setLockTime(uint256 time) public onlyOwner{
+        lockTime = time;
+        emit LockTimeChanged(time);
     }
 
-    function invest(address referral) public payable { 
-        uint256 amount;
+    function invest() public payable { 
         require(!paused(), "Sale is paused");
         require(startsAt <= block.timestamp && endsAt > block.timestamp);
-        require(referral != msg.sender, "Invalid");
         uint256 tokensAmount = (msg.value).div(tokenPerBNB).mul(10 ** 18);
-        if(!refPaused && referral != address(0)){
-            uint256 referralpercent = tokensAmount.mul(10).div(100);   // 10% of tokensAmount goes to referral.
-            // token.transfer(referral, referralpercent);
-            amount = tokensAmount.sub(referralpercent); 
-        }
-        else{
-            amount = tokensAmount;
-        }
-        
         if(investedAmount[msg.sender].isExist){
             investedAmount[msg.sender].totalBuy++;
             investedAmount[msg.sender].investAmount = msg.value;
-            investedAmount[msg.sender].tokenAmount = amount;
+            investedAmount[msg.sender].tokenAmount = tokensAmount;
             investedAmount[msg.sender].buyTime = block.timestamp;
-            investedAmount[msg.sender].lockTime = block.timestamp + 182 days;
-           
         }else{
             Invest memory investInfo;
             investInfo = Invest({
                 isExist      : true,
                 totalBuy     : 1,
                 investAmount : msg.value,
-                tokenAmount  : amount,
-                buyTime      : block.timestamp,
-                lockTime     : block.timestamp + 182 days
+                tokenAmount  : tokensAmount,
+                buyTime      : block.timestamp
             });
             investedAmount[msg.sender] = investInfo;
         }
         investDetails[msg.sender][investedAmount[msg.sender].totalBuy] = investedAmount[msg.sender];
         // Update totals
         tokensSold += tokensAmount;
-
+        
+         // Transfer Fund to owner's address
+        payable(owner()).transfer(address(this).balance);
+        
         // Emit an event that shows invested successfully
         emit Invested(msg.sender, msg.value, tokensAmount);
-
-        // Transfer Fund to owner's address
-        payable(owner()).transfer(address(this).balance);
     }
 
-    function withdrawTokens(uint256 amount) public onlyOwner{
+    function transferTokens(uint256 amount) public onlyOwner{
         require(token.balanceOf(address(this)) > amount , "Not Enough Tokens");
         token.transfer(owner(), amount);
     } 
@@ -153,9 +148,9 @@ contract ICO is Ownable, Pausable {
         uint256 releaseAmount = 0;
         require(amount > minWithdraw, "Minimum Withdrawal Amount Not Met");
         for(uint i = 1 ; i <= investedAmount[msg.sender].totalBuy ; i++){
-            if(block.timestamp > investDetails[msg.sender][i].lockTime){
-              uint256 lockTime = (block.timestamp - investDetails[msg.sender][i].lockTime).div(30 days);
-              releaseAmount += (investDetails[msg.sender][i].tokenAmount).div(5).mul(lockTime);
+            if(block.timestamp > investDetails[msg.sender][i].buyTime + lockTime){
+              uint256 locksTime = (block.timestamp - (investDetails[msg.sender][i].buyTime + lockTime)).div(30 days);
+              releaseAmount += (investDetails[msg.sender][i].tokenAmount).div(5).mul(locksTime);
             }
         }
         require(releaseAmount - withdraw[msg.sender] > amount, "Not Enough Amount");
@@ -184,9 +179,9 @@ contract ICO is Ownable, Pausable {
         return refPaused;
     }
     
-    function getInvestDetails(address account, uint256 index) public view returns(bool, uint256, uint256, uint256, uint256, uint256){
+    function getInvestDetails(address account, uint256 index) public view returns(bool, uint256, uint256, uint256, uint256){
         Invest memory investInf = investDetails[account][index];  
-        return (investInf.isExist, investInf.totalBuy, investInf.tokenAmount, investInf.investAmount, investInf.buyTime, investInf.lockTime);
+        return (investInf.isExist, investInf.totalBuy, investInf.tokenAmount, investInf.investAmount, investInf.buyTime);
     }
     
     function getSoldTokens() public view returns (uint256) {
