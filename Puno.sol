@@ -2,31 +2,15 @@
 
 pragma solidity ^0.8.0;
 
-import "./BEP20.sol";
+import "./TRC20.sol";
 import "./Ownable.sol";
 
-contract Puno is BEP20, Ownable{
-    uint256 _totalSupply       = 5100000 * 10 ** 18;
-    
-    uint256 rewardPercent      = 250000 * 10 ** 18;
-    
-    uint256 holdPercent        = 2799000 * 10 ** 18;
-    
-    uint256 maintenacePercent  = 51000 * 10 ** 18;
-    
-    uint256 circulatingPercent = 2000000 * 10 ** 18;
-    
-    address rewardWallet       = 0x4A250668b0610cA1aff58732346982F7d75120C1;
-    
-    address maintenanceWallet  = 0x4A250668b0610cA1aff58732346982F7d75120C1;
-    
-    address holdWallet         = 0x4A250668b0610cA1aff58732346982F7d75120C1;
-    
-    constructor (string memory name, string memory symbol) BEP20(name, symbol) {
-        _mint(msg.sender, circulatingPercent);
-        _mint(rewardWallet, rewardPercent);
-        _mint(maintenanceWallet, maintenacePercent);
-        _mint(holdWallet, holdPercent);
+contract Puno is TRC20, Ownable{
+    constructor (string memory name, string memory symbol, address rewardWallet, address maintenanceWallet, address holdWallet) TRC20(name, symbol) {
+        _mint(msg.sender, 2000000 * 10 ** 6);
+        _mint(rewardWallet, 250000 * 10 ** 6);
+        _mint(maintenanceWallet, 51000 * 10 ** 6);
+        _mint(holdWallet, 2799000 * 10 ** 6);
     }
     
     function burn(uint256 amount) external  {
@@ -34,6 +18,6 @@ contract Puno is BEP20, Ownable{
     }
     
     function totalSupply() public view virtual override returns (uint256) {
-        return _totalSupply;
+        return 5100000 * 10 ** 6;
     }
 }
