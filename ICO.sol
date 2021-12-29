@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./IBEP20.sol";
+import "./ITRC20.sol";
 import "./Ownable.sol";
 import "./SafeMath.sol";
 import "./Pausable.sol";
@@ -11,7 +11,7 @@ contract ICO is Ownable, Pausable {
     using SafeMath for uint256;
     
     // The token we are selling
-    IBEP20 private token;
+    ITRC20 private token;
 
     // the UNIX timestamp start date of the crowdsale
     uint256 private startsAt;
@@ -20,34 +20,31 @@ contract ICO is Ownable, Pausable {
     uint256 private endsAt;
 
     // the price of token
-    uint256 private tokenPerBNB;
+    uint256 private tokenPrice;
 
     // the number of tokens already sold through this contract
     uint256 private tokensSold = 0;
     
-    // referral paused
-    bool private refPaused = false;
+    uint256 private lockTime  = 15724800;
     
-    // minimum withdraw amount
-    uint256 private minWithdraw = 10000000000000000000;
-    
-    uint256 private lockTime  = 182 days;
-    
-    // invest struct
-    struct Invest{
-        bool    isExist;
+    struct User{
+        bool isExist;
         uint256 totalBuy;
+        uint256 withdrawAmount;
+    }
+    
+    struct Buy{
         uint256 investAmount;
         uint256 tokenAmount;
         uint256 buyTime;
     }
-    
+
     mapping(address => uint256) private withdraw;
 
     // How much BNB each address has invested to this crowdsale
-    mapping (address => Invest) private investedAmount;
+    mapping(address => User) private userDetails;
     
-    mapping (address => mapping (uint => Invest)) private investDetails;
+    mapping (address => mapping (uint => Buy)) private buyDetails;
     
     // A new investment was made
     event Invested(address indexed investor, uint256 investAmount, uint256 tokenAmount);
@@ -68,7 +65,8 @@ contract ICO is Ownable, Pausable {
     event Withdraw(uint256 amount, address indexed user, uint256 withdrawTime);
     
     function initialize(address _token) public onlyOwner{
-         token = IBEP20(_token);
+        require(_token != address(0), "Invalid Address");
+        token = ITRC20(_token);
     }
     
     function pause() public onlyOwner {
@@ -78,14 +76,6 @@ contract ICO is Ownable, Pausable {
     function unpause() public onlyOwner {
         _unpause();
     } 
-    
-    function setReferralPaused() public onlyOwner{
-        refPaused = false;
-    }
-    
-    function setReferralUnpaused() public onlyOwner{
-        refPaused = true;
-    }
     
     function setStartsAt(uint256 time) public onlyOwner{
         startsAt = time;
@@ -99,42 +89,39 @@ contract ICO is Ownable, Pausable {
     
     function setRate(uint256 value) public onlyOwner{
         require(value > 0);
-        tokenPerBNB = value;
-        emit RateChanged(tokenPerBNB, value);
+        tokenPrice = value;
+        emit RateChanged(tokenPrice, value);
     }
     
     function setLockTime(uint256 time) public onlyOwner{
         lockTime = time;
         emit LockTimeChanged(time);
     }
-
-    function invest() public payable { 
-        require(!paused(), "Sale is paused");
+    
+    function invest() public payable whenNotPaused{ 
         require(startsAt <= block.timestamp && endsAt > block.timestamp);
-        uint256 tokensAmount = (msg.value).div(tokenPerBNB).mul(10 ** 18);
-        if(investedAmount[msg.sender].isExist){
-            investedAmount[msg.sender].totalBuy++;
-            investedAmount[msg.sender].investAmount = msg.value;
-            investedAmount[msg.sender].tokenAmount = tokensAmount;
-            investedAmount[msg.sender].buyTime = block.timestamp;
+        uint256 tokensAmount = (msg.value).mul(10**6).div(tokenPrice);  // check
+        if(userDetails[msg.sender].isExist){
+            userDetails[msg.sender].totalBuy++;
         }else{
-            Invest memory investInfo;
-            investInfo = Invest({
-                isExist      : true,
-                totalBuy     : 1,
-                investAmount : msg.value,
-                tokenAmount  : tokensAmount,
-                buyTime      : block.timestamp
+            User memory userInfo;
+            userInfo = User({
+                isExist : true,
+                totalBuy: 1,
+                withdrawAmount: 0
             });
-            investedAmount[msg.sender] = investInfo;
+            userDetails[msg.sender] = userInfo;
         }
-        investDetails[msg.sender][investedAmount[msg.sender].totalBuy] = investedAmount[msg.sender];
-        // Update totals
         tokensSold += tokensAmount;
-        
+        Buy memory buyInfo;
+        buyInfo = Buy({
+            investAmount : msg.value,
+            tokenAmount  : tokensAmount,
+            buyTime      : block.timestamp
+        });
+        buyDetails[msg.sender][userDetails[msg.sender].totalBuy] = buyInfo;
          // Transfer Fund to owner's address
         payable(owner()).transfer(address(this).balance);
-        
         // Emit an event that shows invested successfully
         emit Invested(msg.sender, msg.value, tokensAmount);
     }
@@ -146,24 +133,24 @@ contract ICO is Ownable, Pausable {
     
     function withdrawal(uint256 amount) public {
         uint256 releaseAmount = 0;
-        require(amount > minWithdraw, "Minimum Withdrawal Amount Not Met");
-        for(uint i = 1 ; i <= investedAmount[msg.sender].totalBuy ; i++){
-            if(block.timestamp > investDetails[msg.sender][i].buyTime + lockTime){
-              uint256 locksTime = (block.timestamp - (investDetails[msg.sender][i].buyTime + lockTime)).div(30 days);
-              releaseAmount += (investDetails[msg.sender][i].tokenAmount).div(5).mul(locksTime);
+        require(amount > 0, "Amount Not be zero");
+        for(uint i = 1 ; i <= userDetails[msg.sender].totalBuy ; i++){
+            if(block.timestamp > buyDetails[msg.sender][i].buyTime + lockTime){
+              uint256 time = (block.timestamp - (buyDetails[msg.sender][i].buyTime + lockTime)).div(30 days);
+              releaseAmount = releaseAmount + (buyDetails[msg.sender][i].tokenAmount).div(5).mul(time);
             }
         }
-        require(releaseAmount - withdraw[msg.sender] > amount, "Not Enough Amount");
+        require(releaseAmount - userDetails[msg.sender].withdrawAmount >= amount, "Not Enough Amount");
         token.transfer(msg.sender, amount);
-        withdraw[msg.sender] += amount;
+        userDetails[msg.sender].withdrawAmount += amount;
         emit Withdraw(amount, msg.sender, block.timestamp);
     }
     
     function price() public view returns (uint256){
-        return tokenPerBNB;
+        return tokenPrice;
     }
     
-    function getToken() public view returns (IBEP20){
+    function getToken() public view returns (ITRC20){
         return token;
     }
     
@@ -175,16 +162,21 @@ contract ICO is Ownable, Pausable {
         return endsAt;
     }
     
-    function getRefPause() public view returns (bool){
-        return refPaused;
-    }
-    
-    function getInvestDetails(address account, uint256 index) public view returns(bool, uint256, uint256, uint256, uint256){
-        Invest memory investInf = investDetails[account][index];  
-        return (investInf.isExist, investInf.totalBuy, investInf.tokenAmount, investInf.investAmount, investInf.buyTime);
+    function getInvestDetails(address account, uint256 index) public view returns(uint256, uint256, uint256){
+        Buy memory buyInf = buyDetails[account][index];  
+        return (buyInf.tokenAmount, buyInf.investAmount, buyInf.buyTime);
     }
     
     function getSoldTokens() public view returns (uint256) {
         return tokensSold;
+    }
+    
+    function getLockTime() public view returns (uint256){
+        return lockTime;
+    }
+    
+    function getUserDetails(address account) public view returns (bool, uint256, uint256){
+        User memory userInf = userDetails[account];
+        return (userInf.isExist, userInf.totalBuy, userInf.withdrawAmount);
     }
 }
