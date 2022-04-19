@@ -1,0 +1,327 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>::.login.::</title>
+  <link rel="icon" href="images/logo.ico" />
+  <!--responsive-meta-here-->
+  <meta name="viewport" content="minimum-scale=1.0, maximum-scale=1.0,width=device-width, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!--responsive-meta-end-->
+  <link href="css/bootstrap.min.css" rel="stylesheet" />
+  <link href="css/fontawesome.min.css" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="css/owl.carousel.min.css" media="screen" />
+  <link rel="stylesheet" href="css/style.css" rel="stylesheet" />
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <!-- <link rel="stylesheet" href="css/responsive.css" rel="stylesheet"/> -->
+  <style>
+    .fancy-forms .tab-content {
+      background: #161a3000;
+      color: #FFFFFF;
+      /* padding: 10px; */
+    }
+    .input-site .form-control {
+    border: 1px solid #72747a75;
+    background: #0f1224;
+    font-size: 14px;
+    padding: 0px 20px;
+    color: #fff;
+    height: 40px;
+}
+    .fancy-forms .nav-tabs .nav-item {
+      width: 50%;
+      text-align: center;
+    }
+
+    .fancy-forms .nav-tabs .nav-link {
+      border-color: #151A33;
+      color: #fff;
+      border-top-left-radius: 0;
+      background: #151A33;
+      border-top-right-radius: 0;
+      box-shadow: 0px 10px 20px 0px rgb(0 0 0 / 30%);
+    }
+
+    .fancy-forms .nav-tabs .nav-link.active {
+      color: #fff;
+      border: 1px solid #272D51;
+      background-color: #272D51;
+    }
+
+    .fancy-forms .nav-tabs .nav-link:hover {
+      border-color: #72747a75;
+    }
+
+    fancy-forms .nav-tabs .nav-link.active:hover {
+      border-color: #E47A4B;
+    }
+
+    .fancyformcontainer {
+      background: #272D51;
+      padding: 1.6rem 3rem !important;
+      margin: 0px 0;
+      border-radius: 0;
+    }
+
+    .formsubmitbtn {
+      background: #E47A4B;
+      color: white;
+      margin: 20px 0 0;
+    }
+
+    .formsubmitbtn:hover,
+    .formsubmitbtn:focus {
+      color: #fff;
+    }
+
+    .form-control {
+      height: 50px;
+      border-radius: 10px;
+      background-color: #151A33;
+      border: 1px solid #72747a75;
+    }
+
+    ul#myTab {
+      border: 1px solid #ffffff61;
+      padding: 15px 10px;
+    }
+
+    .forgot-text h6 {
+      font-size: 16px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+    <div class="warper ">
+      <div class="login-wraper">
+        <div class="login-bg"><img src="images/banner-home.png"></div>
+        <div class="login-box">
+          <div class="logo-in-page">
+            <a href="index.html">
+              <img src="images/logo.png">
+            </a>
+            <h4>Login to your account!</h4>
+          </div>
+        </div>
+        <div class="container">
+          <div class="row">
+            <div class="col-md-8 offset-md-2 mt-0 mb-5 fancy-forms">
+              <!-- <div class="cardbox"> -->
+              <ul class="nav nav-tabs  mt-3" id="myTab" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" id="login" data-toggle="tab" href="#login_form" role="tab"
+                    aria-controls="login" aria-selected="true" onclick='typeEmail()'>Login Using Email</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="signup" data-toggle="tab" href="#signup_form" role="tab"
+                    aria-controls="signup" aria-selected="false" onclick='typemobile()'>Login Using Phone</a>
+                </li>
+              </ul>
+              <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="login_form" role="tabpanel" aria-labelledby="login">
+                  <div class="fancyformcontainer">
+                    <h3 class="text-center">Login</h3>
+                    <div class="form-group input-site">
+                      <label for="email">Email address</label>
+                      <input type="text" onkeypress=" enterKeyName(event)"  id="email" placeholder="Email" class="form-control">
+                      <span id="email_error" class="text-danger bold" style="display:none;"></span>
+                    </div>
+                    <div class="form-group input-site">
+                      <label for="password">Password</label>
+                      <input type="password" id="pass" onkeypress=" enterKeyName(event)"  placeholder="Password" class="form-control">
+                      <span id="pass_error" class="text-danger bold" style="display:none;"></span>
+                    </div>
+                    <div class="text-center">
+                      <button class="btn btn-green w-100" onclick="login()">Login</button>
+                    </div>
+                   
+                    <div class="forgot-text mt-4">
+
+                      <h6>Forgot password ? <a href="forgot-password.html">Click here!</a></h6>
+                    </div>
+                    <div class="forgot-text mt-4">
+                      <h6>Don't have an account ? <a href="signup.html">Click here!</a></h6>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="signup_form" role="tabpanel" aria-labelledby="signup">
+                  <div class="fancyformcontainer">
+                    <h3 class="text-center">Login</h3>
+                    <div class="form-group input-site">
+                      <label for="phone_num">Mobile Number</label>
+                      <input type="number" onkeypress=" enterKeyName(event)"   class="form-control" id="phone_num" placeholder="Enter valid mobile number">
+                      <span id="num_error" class="text-danger bold" style="display:none;"></span>
+                    </div>
+                    <div class="form-group input-site">
+                      <label for="password">Password</label>
+                      <input type="password" onkeypress=" enterKeyName(event)"   id="mob_pass" placeholder="Password" class="form-control">
+                      <span id="mob_pass_error" class="text-danger bold" style="display:none;"></span>
+                    </div>
+                    <div class="text-center">
+                      <button class="btn btn-green w-100" onclick="login()">Login</button>
+                    </div>
+                   <div class="forgot-text mt-4">
+
+                      <h6>Forgot password ? <a href="forgot-password.html">Click here!</a></h6>
+                    </div>
+                    <div class="forgot-text mt-4">
+                      <h6>Don't have an account ? <a href="signup.html">Click here!</a></h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--  </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+<script src="js/jquery.min.js" type="text/javascript"></script>
+<script src="js/bootstrap.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/owl.carousel.min.js"></script>
+<script src="https://kit.fontawesome.com/184e8709aa.js" crossorigin="anonymous"></script>
+<script type="text/javascript">
+  $(window).scroll(function () { var body = $("body"), scroll = $(window).scrollTop(); if (scroll >= 5) body.addClass("fixed"); else body.removeClass("fixed"); });
+  window.typecheck = 'email' ;
+   function typeEmail(){
+      typecheck ='email'
+   }
+   function typemobile(){
+      typecheck ='mobile'
+   }
+  function enterKeyName(event) {
+            if (event.keyCode == 13) {
+                console.log("Enter key is pressed");
+                login();
+            } else {
+            }
+  }
+  function login() {
+    let type = typecheck;
+    if(type == 'email'){
+      var data = document.getElementById("email").value;
+      var data_pass = document.getElementById("pass").value;
+      console.log(data, data_pass,type);
+
+      var dataIDVal = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      var emailIDTrue = dataIDVal.test(data);
+
+      if (emailIDTrue) {
+        document.getElementById('email_error').style.display = "none";
+        document.getElementById('email_error').innerHTML = "";
+      } else {
+        if (data == "") {
+          document.getElementById('email_error').style.display = "block";
+          document.getElementById('email_error').innerHTML = "** Fill this field";
+          return;
+        }
+        else {
+          document.getElementById('email_error').style.display = "block";
+          document.getElementById('email_error').innerHTML = "** Email is invalid.";
+          return;
+        }
+
+      }
+
+      if (data_pass == "") {
+        document.getElementById('pass_error').style.display = "block";
+        document.getElementById('pass_error').innerHTML = "** Fill this field";
+        return;
+      }
+      else {
+        document.getElementById('pass_error').innerHTML = "";
+        document.getElementById('pass_error').style.display = "none";
+      }
+    }
+    else if(type == 'mobile'){
+      var data = document.getElementById("phone_num").value;
+      var data_pass = document.getElementById("mob_pass").value;
+      console.log(data, data_pass,type);
+
+      var dataIDVal = /^[6-9]\d{9}$/
+      var emailIDTrue = dataIDVal.test(data);
+//      var emailIDTrue = true;
+
+      if (emailIDTrue) {
+        document.getElementById('num_error').style.display = "none";
+        document.getElementById('num_error').innerHTML = "";
+      } else {
+        if (data == "") {
+          document.getElementById('num_error').style.display = "block";
+          document.getElementById('num_error').innerHTML = "** Fill this field";
+          return;
+        }
+        else {
+          document.getElementById('num_error').style.display = "block";
+          document.getElementById('num_error').innerHTML = "** Phone number is invalid.";
+          return;
+        }
+
+      }
+
+      if (data_pass == "") {
+        document.getElementById('mob_pass_error').style.display = "block";
+        document.getElementById('mob_pass_error').innerHTML = "** Fill this field";
+        return;
+      }
+      else {
+        document.getElementById('mob_pass_error').innerHTML = "";
+        document.getElementById('mob_pass_error').style.display = "none";
+      }
+    }
+    
+
+    var settings = {
+      "url": "https://puno.finance:5000/api/login",
+      "method": "POST",
+      "timeout": 0,
+      "headers": {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      "data": {
+        "user": data,
+        "password": data_pass,
+        "loginType": type
+      }
+    };
+
+    $.ajax(settings).done(function (response) {
+      console.log(response);
+      if (response.success == true) {
+        swal(response.msg, {
+          timer: 3000,
+          icon: "success",
+          button: false,
+        });
+        console.log(response.user[0].id);
+        if (response.user[0].id == 1) {
+          localStorage.setItem('userid', response.user[0].id);
+          let userid = localStorage.getItem('userid');
+          setTimeout(function () { window.location.href = "https://puno.finance/adminDashboard.html"; }, 5000);
+        }
+        else {
+          localStorage.setItem('userid', response.user[0].id);
+          let userid = localStorage.getItem('userid');
+          console.log(userid);
+          // setTimeout(function () { window.location.href = "./dashboard.html"; }, 2000);
+          setTimeout(function () { window.location.href = "https://puno.finance/dashboard.html"; }, 2000);
+        }
+      }
+      else {
+        swal(response.msg, {
+          timer: 3000,
+          icon: "warning",
+          button: false,
+        });
+      }
+    });
+  }
+</script>
+
+</html>

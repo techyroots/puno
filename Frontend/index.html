@@ -1,0 +1,531 @@
+<!doctype html>
+<html>
+   <head>
+      <meta charset="utf-8">
+
+      <title>Puno</title>
+      <link rel="icon" href="images/logo.ico"  />
+      <!--responsive-meta-here-->
+      <meta name="viewport" content="minimum-scale=1.0, maximum-scale=1.0,width=device-width, user-scalable=no">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+      <!--responsive-meta-end-->
+      <link href="css/bootstrap.min.css" rel="stylesheet" />
+      <link href="css/fontawesome.min.css" rel="stylesheet"/>
+      <link rel="stylesheet" type="text/css" href="css/owl.carousel.min.css" media="screen" />
+      <link rel="stylesheet" href="css/style.css" />
+      <link rel="stylesheet" href="css/responsive.css">
+      <script src="js/TronWeb.js"></script>
+      <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+      <!-- <link rel="stylesheet" href="css/responsive.css" rel="stylesheet"/> -->
+      <script>
+         const node = "https://api.shasta.trongrid.io"  //network detail of tronlink wallet 
+         //contract initialize
+         const waitTron = () => {
+         	return new Promise((resovle, reject) => {
+         		let attempt = 0,
+         			maxAttempt = 100;
+         		const checkTron = () => {
+         			if (window.tronWeb) {
+         				resovle(true);
+         				return;
+         			}
+         			attempt++;
+         			if (attempt >= maxAttempt) {
+         				reject(false);
+         				return;
+         			}
+         			setTimeout(checkTron, 100);
+         		};
+         		checkTron();
+         	});
+         }
+         
+         const initContract = async() => {
+         	let tronExist = await waitTron();
+         	if (!tronExist) {
+         		swal("Unlock Your TronLink wallet", {
+         			button: false,
+         			icon: "warning"
+         		});
+         		return null;
+         	}
+         }
+         
+         function unlockwallet() {
+         	if (window.tronWeb) {
+         		if (window.tronWeb.defaultAddress.base58) {
+         			if (window.tronWeb.fullNode.host == node) {
+                        document.getElementById("unlock").innerHTML = "My Wallet";
+                        window.location.href = "https://puno.finance/dashboard.html";
+         			}
+         			else {
+         				swal("Please select shasta network", {
+         					button: false,
+         					icon: "warning",
+         					timer: 1000
+         				});
+         			}
+         		} 
+         		else {
+         			swal("Unlock Your wallet", {
+         				button: false,
+         				icon: "warning",
+         				timer: 1000
+         			});
+         		}
+         	} 
+         	else {
+         		document.getElementById("unlock").innerHTML = "Unlock Wallet";
+         		swal("Please install TronLink wallet", {
+         			button: false,
+         			icon: "warning",
+         			timer: 1000
+         		});
+         	}
+        }
+        
+        // function refersh(){
+        //     if (window.tronWeb.fullNode.host == node) {
+        //         clearInterval(th);
+        //      	document.getElementById("unlock").innerHTML = "My Wallet";
+        //      	window.location.href = "https://puno.finance/dashboard.html";
+        //     }else{
+        //      	document.getElementById("unlock").innerHTML == "Unlock Wallet";
+        //     }
+        // }
+        // var th = setInterval(function(){ refersh() }, 1000);
+         
+         
+      </script>
+   </head>
+   <body>
+      <div class="warper ">
+         <!--header-content-here-->
+         <header>
+            <div class="container">
+               <nav class="navbar navbar-expand-lg">
+                  <a class="navbar-brand" href="#"><img src="images/logo.png"></a>
+                  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                     <div class="menu-btn d-flex ml-auto">
+                        <ul class="navbar-nav">
+                           <li class="nav-item">
+                              <a class="nav-link" href="pdf/About Us.pdf" target="_blank">About us</a>    
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" href="#tokenomics-tab">Tokenomics</a>
+                           </li> 
+                           <li class="nav-item">
+                              <a class="nav-link" href="#roadmap-tab">Roadmap</a>
+                           </li>  
+                           <li class="nav-item">
+                              <a class="nav-link" href="#">FAQS</a>
+                           </li>  
+                           <li class="nav-item">
+                              <a class="nav-link" href="#">Contact</a>
+                           </li> 
+                           <li class="nav-item" id = "redirectPage">
+                           </li>
+                        </ul>                  
+                     </div>             
+                  </div>
+                  <div class="ml-auto header-btns">
+                    	
+                     <!--<a href="https://puno.finance/signup.php" class="btn btn-blue">Register</a>-->
+                     <a href="javascript:;" class="btn btn-blue" id="unlock" onclick = "unlockwallet()">Unlock Wallet</a>
+                  </div> 
+               </nav>
+            </div>
+         </header>
+         <!--header-content-end-->
+
+       <!--site-container-start-->
+         <div class="site_content">
+           <section class="home-banner">
+            <img src="images/s-left.svg" class="shape-1">
+            <img src="images/s-right.svg" class="shape-2">
+             <article>
+               <span> Welcome to</span>
+               <h1>Puno Coin</h1>
+               <p>PUNO has been launched in 2021 in the beginning our focus to implement our scalability and profitability to improve our eco-system in near and far future. We belief to provide best crypto environments to our users</p>
+               <div class="btn-home">
+                  <a href="javascript:;" class="btn btn-green">Legal opinion</a>
+                  <a href="pdf/puno ppt.pdf" target = "_blank" class="btn btn-blue">Whitepaper</a>
+               </div>
+             </article>
+           </section>
+
+           <section class="about-sec section-padd pt-3" id="about-tab">
+             <div class="container">
+              <div class="about-sec-main">
+                <div class="heading-text">
+                 <h4>About US</h4>
+                </div>
+                <div class="row">
+                  <div class="col-md-10">
+                    <p>PUNO Coin is a blockchain based decentralized cryptocurrency service platform. Our main objective is to create an ecosystem on blockchain to improve the uses of crypto currency with high security transactions. Which will give user aim is to bring popular to safe and secure environment for their financial needs. PUNO’s crypto currency concepts to the mainstream. PUNO, founded in 2021, is the central DeFi token which will be used for transactions on the group and on our partnering platforms.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="about-3-blk">
+                <div class="row">
+                  <div class="col-md-4">
+                    <article>
+                      <figure>
+                        <img src="images/icon-1.svg">
+                      </figure>
+                      <h4>Puno wallet</h4>
+                      <p>Our main focus is to provide the best crypto service to our users. So they can easily transfer their crypto coin to top ten crypto to currency with help of our wallet in minimum transaction fees.</p>
+                    </article>
+                  </div>
+                  <div class="col-md-4">
+                    <article>
+                      <figure>
+                        <img src="images/icon-2.svg">
+                      </figure>
+                      <h4>Puno trading platform</h4>
+                      <p>Our mission is to provide secure and transparent service thus user had not to go anywhere to convert their crypto to other platform. They can convert, hold and trade with help of PUNO trading platform. Users can trade top hundred crypto currencies.</p>
+                    </article>
+                  </div>
+                  <div class="col-md-4">
+                    <article>
+                      <figure>
+                        <img src="images/icon-3.svg">
+                      </figure>
+                      <h4>Puno blockchain</h4>
+                      <p>As all of us know that blockchain is most powerful and secure network for online transaction. Our main vision to list our own exchange with blockchain technology. </p>
+                    </article>
+                  </div>
+                </div>
+              </div>
+             </div>
+           </section>
+
+           <div class="blue-light-area" id="tokenomics-tab">
+             <section class="tokenomics-sec">
+               <div class="container">
+                 <div class="heading-text text-center">
+                   <h4>Tokenomics</h4>
+                 </div>
+                 <div class="row">
+                   <div class="col-md-2">
+                     <figure>
+                       <img src="images/1.svg">
+                     </figure>
+                     <p>Pre-sale & Market Cap</p>
+                     <h4>($PUNO) 6100000</h4>
+                   </div>
+                   <div class="col-md-2">
+                     <figure>
+                       <img src="images/2.svg">
+                     </figure>
+                     <p>Total Pre-sale released</p>
+                     <h4>($PUNO) 2000000</h4>
+                   </div>
+                   <div class="col-md-2">
+                     <figure>
+                       <img src="images/3.svg">
+                     </figure>
+                     <p>Liquidity (Company Hold)</p>
+                     <h4>($PUNO) 3700000</h4>
+                   </div>
+                   <div class="col-md-2">
+                     <figure>
+                       <img src="images/4.svg">
+                     </figure>
+                     <p>Advisor & Development Team</p>
+                     <h4>($PUNO) 300000</h4>
+                   </div>
+                   <div class="col-md-2">
+                     <figure>
+                       <img src="images/5.svg">
+                     </figure>
+                     <p>Reward</p>
+                     <h4>Reward</h4>
+                   </div>
+                   <div class="col-md-2">
+                     <figure>
+                       <img src="images/6.svg">
+                     </figure>
+                     <p>ICO</p>
+                     <h4>($PUNO) 2000000</h4>
+                   </div>
+                 </div>
+               </div>
+             </section>
+             <section class="tokenomics-sec-chart" >
+              <div class="container">
+                <div class="row">
+                 <div class="col-md-12" style="text-align: center;">
+                   <img src= "images/Asset 1.png"  id="myChart" class="chart">
+                 </div>
+               </div>
+              </div>
+             </section>
+             <section class="roadmap-sec section-padd" id="roadmap-tab">
+               <div class="container">
+                 <div class="heading-text text-center">
+                   <h4>ROADMAP</h4>
+                 </div>
+                 <!--<div class="roadmap-sec-li">-->
+                 <!--  <ul>-->
+                 <!--    <li>-->
+                 <!--      <div class="roadmap-box">-->
+                 <!--       <article>-->
+                 <!--        <h4>Q1 pre- sale </h4>-->
+                 <!--        <p>start</p>-->
+                 <!--      </article>-->
+                 <!--      </div>-->
+                 <!--    </li>-->
+                 <!--    <li>-->
+                 <!--      <div class="roadmap-box">-->
+                 <!--       <article>-->
+                 <!--        <h4>Q 2 2022 Puno </h4>-->
+                 <!--        <p>Wallet Launch </p>-->
+                 <!--      </article>-->
+                 <!--      </div>-->
+                 <!--    </li>-->
+                 <!--    <li>-->
+                 <!--      <div class="roadmap-box">-->
+                 <!--       <article>-->
+                 <!--        <h4>Q 3 2022 Puno </h4>-->
+                 <!--        <p>Exchange Launch with upgraded </p>-->
+                 <!--      </article>-->
+                 <!--      </div>-->
+                 <!--    </li>-->
+                 <!--    <li>-->
+                 <!--      <div class="roadmap-box">-->
+                 <!--       <article>-->
+                 <!--        <h4>Q 4 2022 </h4>-->
+                 <!--        <p>Exchange Listing with Top 20 exchange </p>-->
+                 <!--      </article>-->
+                 <!--      </div>-->
+                 <!--    </li>-->
+                 <!--    <li>-->
+                 <!--      <div class="roadmap-box">-->
+                 <!--       <article>-->
+                 <!--        <h4>Q 5 2022 Puno </h4>-->
+                 <!--        <p>Q 5 2022 Puno </p>-->
+                 <!--      </article>-->
+                 <!--      </div>-->
+                 <!--    </li>-->
+                 <!--  </ul>-->
+                 <!--</div>-->
+                 <div class="roadmap-box-img text-center">	
+                   <img src="images/roadmap21.png" width="80%">
+                 </div>
+               </div>
+             </section>
+           </div>
+
+           <section class="milestones-phase section-padd pt-0">
+             <div class="container">
+               <div class="heading-text text-center">
+                 <h4>Milestones & Future Progress</h4>
+                 <p>PUNO COIN system enhances and moves into various channels to extend the client base and arrive at different market areas. In 3 years, the organization accomplished its objectives as a whole. In the following 3 years, it desires to grow. The new speculation capitalization reason is to speed up the interaction, making solid mechanical advancements to increase the business, enlist key representatives, and to upgrade the assets. The guide traces underneath has been made to feature the organization.</p>
+               </div>
+
+               <div class="phase-sec">
+                 <ul>
+                   <li>
+                     <figure>
+                       <div class="fig-in">
+                         Q1 2021
+                       </div>
+                     </figure>
+                     <h4>Pre Launch</h4>
+                     <p>16% of PUNO coins are generated and distributed for Pre-sale</p>
+                   </li>
+                   <li>
+                     <figure>
+                       <div class="fig-in">
+                         Q2 2022
+                       </div>
+                     </figure>
+                     <h4>Launch</h4>
+                     <p>PUNO coin becomes readily available for public purchase on exchanges</p>
+                   </li>
+                   <li>
+                     <figure>
+                       <div class="fig-in">
+                         Q3 2022
+                       </div>
+                     </figure>
+                     <h4>Public Access</h4>
+                     <p>PUNO coin now in natural course as a money, and the other business lines are created and to extend universally.</p>
+                   </li>
+                 </ul>
+               </div>
+             </div>
+           </section>
+
+         </div>
+         <!--site-container-end-->
+         <!--footer-here-->
+         <footer>
+           <div class="news-latter">
+             <div class="container">
+               <div class="news-latter-in">
+                 <div class="news-latter-text">
+                   <h4>Puno coin newsletter</h4>
+                   <p>Join the Puno Coin mailing list</p>
+                 </div>
+                 <div class="news-latter-form">
+                   <input type="text" class="form-control" name="" placeholder="Enter your email">
+                   <button class="btn btn-green">Subscribe now!</button>
+                 </div>
+               </div>
+             </div>
+           </div>
+           <div class="footer-main section-padd">
+             <div class="container">
+               <div class="row">
+                 <div class="col-md-5 mr-auto">
+                   <a href="javascript:;" class="foot-logo">
+                     <img src="images/logo.png">
+                   </a>
+                   <p>PUNO has been launched in 2021 in the beginning our focus to implement our scalability and profitability to improve our eco-system in near and far future. We belief to provide best crypto environments to our users</p>
+
+                   <div class="foot-icon">
+                     <a href="javascript:;"><i class="fab fa-facebook-f"></i></a>
+                     <a href="javascript:;"><i class="fab fa-instagram"></i></a>
+                     <a href="javascript:;"><i class="fab fa-twitter"></i></a>
+                     <a href="javascript:;"><i class="fab fa-linkedin-in"></i></a>
+                   </div>
+                 </div>
+                 <div class="col-md-2">
+                   <h4 class="f-link-head">Menu</h4>
+                   <ul class="footer-link">
+                     <li>
+                       <a target="_blank" href="pdf/About Us.pdf ">About us</a>
+                     </li>
+                     <li>
+                       <a href="#tokenomics-tab">Tokenomics</a>
+                     </li>
+                     <li>
+                       <a href="#roadmap-tab">Roadmap</a>
+                     </li>
+                     <li>
+                       <a href="">Invest</a>
+                     </li>
+                     <li>
+                       <a href="">Contact</a>
+                     </li>
+                   </ul>
+                 </div>
+                 <div class="col-md-3">
+                   <h4 class="f-link-head">PRIVACY & TERMS</h4>
+                   <ul class="footer-link">
+                     <li>
+                       <a target="_blank" href="pdf/Privacy Policy.pdf">Privacy Policy</a>
+                     </li>
+                     <li>
+                       <a href="pdf/Terms and Condition.pdf" target="_blank">Terms & Conditions</a>
+                     </li>
+                     <li>
+                       <a href="">FAQS</a>
+                     </li>
+                   </ul>
+                 </div>
+               </div>
+             </div>
+           </div>
+           <div class="footer-last">
+             <div class="container">
+               <div class="footer-last-in">
+                 © 2021, PunoCoin -  All rights reserved.
+               </div>
+             </div>
+           </div>
+         </footer>
+         <!--footer-end-->
+      </div>
+   </body>
+   <script src="js/jquery.min.js" type="text/javascript"></script>
+   <script src="js/bootstrap.min.js" type="text/javascript"></script>
+   <script type="text/javascript" src="js/owl.carousel.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <script src="https://kit.fontawesome.com/184e8709aa.js" crossorigin="anonymous"></script>
+   <script type="text/javascript">
+    $(window).scroll(function(){var body=$("body"),scroll=$(window).scrollTop();if(scroll>=5)body.addClass("fixed");else body.removeClass("fixed");});
+   </script>
+    <script>
+
+  let userid = localStorage.getItem('userid');
+  console.log("userid", userid);
+  if(userid == null)
+  {
+    $("#redirectPage").append("<a href='https://puno.finance/login.html' class='btn btn-green login-btn'>Login</a>");
+  }else{
+    if(userid == 1)
+    {
+      $("#redirectPage").append("<a href='https://puno.finance/adminDashboard.html' class='btn btn-green login-btn'>Dashboard</a>");
+    }
+    else{
+      $("#redirectPage").append("<a href='https://puno.finance/dashboard.html' class='btn btn-green login-btn'>Dashboard</a>");
+    }
+
+  }
+	const ctx = document.getElementById('myChart').getContext('2d');
+	const myChart = new Chart(ctx, {
+    		type: 'doughnut',
+    		data: {
+        	labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        	datasets: [{
+            		label: '# of Votes',
+            		data: [12, 19, 3, 5, 2, 3],
+            		backgroundColor: [
+                		'rgba(255, 99, 132, 0.8)',
+                		'rgba(54, 162, 235, 0.8)',
+                		'rgba(255, 206, 86, 0.8)',
+                		'rgba(75, 192, 192, 0.8)',
+                		'rgba(153, 102, 255, 0.8)',
+                		'rgba(255, 159, 64, 0.8)'
+            		],
+            		borderColor: [
+                		'rgba(255, 99, 132, 1)',
+                		'rgba(54, 162, 235, 1)',
+                		'rgba(255, 206, 86, 1)',
+                		'rgba(75, 192, 192, 1)',
+               			'rgba(153, 102, 255, 1)',
+               			'rgba(255, 159, 64, 1)'
+            		],
+            		borderWidth: 1
+       		 }]
+   	 },
+	});
+
+	const ddd = document.getElementById('myChartNew').getContext('2d');
+	const myChartNew = new Chart(ddd, {
+    		type: 'doughnut',
+    		data: {
+        	labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        	datasets: [{
+            		label: '# of Votes',
+            		data: [12, 50, 3, 5, 2, 3],
+            		backgroundColor: [
+                		'rgba(255, 99, 132, 0.8)',
+                		'rgba(54, 162, 235, 0.8)',
+                		'rgba(255, 206, 86, 0.8)',
+                		'rgba(75, 192, 192, 0.8)',
+                		'rgba(153, 102, 255, 0.8)',
+                		'rgba(255, 159, 64, 0.8)'
+           		 ],
+            		borderColor: [
+                		'rgba(255, 99, 132, 1)',
+                		'rgba(54, 162, 235, 1)',
+                		'rgba(255, 206, 86, 1)',
+               			'rgba(75, 192, 192, 1)',
+                		'rgba(153, 102, 255, 1)',
+                		'rgba(255, 159, 64, 1)'
+           		 ],
+            		 borderWidth: 1
+       		 }]
+    		},
+	});
+
+</script>
+</html>
